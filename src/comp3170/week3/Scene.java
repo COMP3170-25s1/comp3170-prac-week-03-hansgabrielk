@@ -86,13 +86,28 @@ public class Scene {
 		// set the attributes
 		shader.setAttribute("a_position", vertexBuffer);
 		shader.setAttribute("a_colour", colourBuffer);
+		
+		// define an empty destination Matrix
+		Matrix4f destinationMatrix = new Matrix4f(	0.0f, 0.0f, 0.0f, 0.0f,
+													0.0f, 0.0f, 0.0f, 0.0f,
+													0.0f, 0.0f, 0.0f, 0.0f,
+													0.0f, 0.0f, 0.0f, 0.0f);
+		
+		// set the uniform to the translation Matrix
+		//shader.setUniform("u_modelMatrix", translationMatrix(0.3f,0.3f,destinationMatrix));
+		
+		// set the uniform to the rotation Matrix
+		shader.setUniform("u_modelMatrix", rotationMatrix((float) Math.PI,destinationMatrix));
+		
+		// set the uniform to the scale Matrix
+		//shader.setUniform("u_modelMatrix", scaleMatrix(0.3f,0.3f,destinationMatrix));
 
 		// draw using index buffer
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 		
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
-
+		
 	}
 
 	/**
@@ -104,6 +119,7 @@ public class Scene {
 	 * @param dest Destination matrix to write into
 	 * @return
 	 */
+	
 
 	public static Matrix4f translationMatrix(float tx, float ty, Matrix4f dest) {
 		// clear the matrix to the identity matrix
@@ -133,8 +149,19 @@ public class Scene {
 	 */
 
 	public static Matrix4f rotationMatrix(float angle, Matrix4f dest) {
-
+		
 		// TODO: Your code here
+		dest.identity();
+
+		//     [ 1 0 0 0 ]
+		// R = [ 0 1 0 0 ]
+	    //     [ 0 0 0 0 ]
+		//     [ 0 0 0 1 ]
+		
+		dest.m00((float)  Math.cos(angle));
+		dest.m10((float) -Math.sin(angle));
+		dest.m01((float)  Math.sin(angle));
+		dest.m11((float)  Math.cos(angle));
 
 		return dest;
 	}
