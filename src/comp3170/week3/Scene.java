@@ -122,8 +122,8 @@ public class Scene {
 		
 		System.out.println("current rotation = " + currentRotation);
 		
-		rotationMatrix(currentRotation, destMatrix);
 		translationMatrix(TRANSLATION_RADIUS * (float) Math.cos(currentRotation), TRANSLATION_RADIUS * (float) Math.sin(currentRotation), destMatrix);
+		rotationMatrix(currentRotation, destMatrix);
 		scaleMatrix(SCALE_FACTOR, SCALE_FACTOR, destMatrix);
 	}
 	
@@ -139,7 +139,7 @@ public class Scene {
 
 	public static Matrix4f translationMatrix(float tx, float ty, Matrix4f dest) {
 		
-		//dest.identity();
+		dest.identity();
 		
 		//     [ 1 0 0 tx ]
 		// T = [ 0 1 0 ty ]
