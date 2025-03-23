@@ -33,8 +33,9 @@ public class Scene {
 	
 	private long oldTime;
 	
-	private static final float TRANSLATION_SPEED = 2.5f;
-	private static final float ROTATION_SPEED = -5f;
+	private static final float ROTATION_SPEED = 3f;
+	private static final float TRANSLATION_RADIUS = 0.5f;
+	private static final float SCALE_FACTOR = 0.15f;
 	
 	private float currentRotation = 0f;
 	
@@ -89,8 +90,6 @@ public class Scene {
 		indexBuffer = GLBuffers.createIndexBuffer(indices);
 		
 		oldTime = System.currentTimeMillis();
-		
-		destMatrix = translationMatrix(-0.5f, 0f, destMatrix);
 
 	}
 
@@ -112,7 +111,22 @@ public class Scene {
 		glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
 		
 	}
-
+	
+	private void update() {
+		// calculate seconds since last frame
+		long time = System.currentTimeMillis();
+		float deltaTime = (time - oldTime) / 1000f;
+		oldTime = time;
+		
+		currentRotation += ROTATION_SPEED * deltaTime;
+		
+		System.out.println("current rotation = " + currentRotation);
+		
+		rotationMatrix(currentRotation, destMatrix);
+		translationMatrix(TRANSLATION_RADIUS * (float) Math.cos(currentRotation), TRANSLATION_RADIUS * (float) Math.sin(currentRotation), destMatrix);
+		scaleMatrix(SCALE_FACTOR, SCALE_FACTOR, destMatrix);
+	}
+	
 	/**
 	 * Set the destination matrix to a translation matrix. Note the destination
 	 * matrix must already be allocated.
@@ -122,42 +136,6 @@ public class Scene {
 	 * @param dest Destination matrix to write into
 	 * @return
 	 */
-	
-	private void update() {
-		// calculate seconds since last frame
-		long time = System.currentTimeMillis();
-		float deltaTime = (time - oldTime) / 1000f;
-		oldTime = time;
-		
-		//System.out.println("update: dt = " + deltaTime + "s");
-		
-		// increase the rotation angle (in radians) by the speed by deltaTime
-		currentRotation += ROTATION_SPEED * deltaTime;
-		
-		// scale updates by deltaTime
-		destMatrix = moveForward(TRANSLATION_SPEED, currentRotation, destMatrix, deltaTime);
-		destMatrix = rotationMatrix(currentRotation, destMatrix);
-		
-		// scale is not affected by delta time
-		destMatrix = scaleMatrix(0.1f, 0.1f, destMatrix);
-	}
-	
-	public static Matrix4f moveForward(float speed, float rotation, Matrix4f dest, float dt) {
-		
-		// rotation is in radians
-		
-		//      [ 1 0 0 x ]
-		// MV = [ 0 1 0 y ]
-	    //      [ 0 0 0 0 ]
-		//      [ 0 0 0 1 ]
-		
-		float x = dest.m30() + speed * -(float)Math.sin(rotation) * dt;
-		float y = dest.m31() + speed * 	(float)Math.cos(rotation) * dt;
-		
-		dest = translationMatrix(x, y, dest);
-		
-		return dest;
-	}
 
 	public static Matrix4f translationMatrix(float tx, float ty, Matrix4f dest) {
 		
